@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         recyclerV = findViewById(R.id.rvMessage)
         newMessageET = findViewById(R.id.editTextNewMessage)
+        sendBt = findViewById(R.id.sendBt)
 
         recyclerV.adapter = messageAdapterRV
 
