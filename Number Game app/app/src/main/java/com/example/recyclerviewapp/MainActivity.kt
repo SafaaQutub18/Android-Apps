@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     //Phrase var:
     var myPhrase = "this is the secret phrase"
-    var starsString = "**** ** *** ****** ******"
+    //var starsString = "**** ** *** ****** ******"
+    var starsString = ""
     var unguessedletter = 9
     var lossCount = 0
     var guessedLetter = ""
@@ -31,6 +32,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        for(i in 0 until myPhrase.length){
+            println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"+ myPhrase[i])
+            if(myPhrase[i] != ' ')
+                starsString += "*"
+            else
+                starsString += " "
+            println("noooooooooooooooooooooooooooooooooonoooooooono"+ starsString)
+        }
 
         recyclerV = findViewById(R.id.rvGameText)
         newGusseNumET = findViewById(R.id.editTextNewNumber)
@@ -102,6 +112,10 @@ class MainActivity : AppCompatActivity() {
             guessesTextList.add(GuessesText("found $foundCount $letter(s)","#33D402"))
             guessesTextList.add(GuessesText("$unguessedletter guess remaining","#010300"))
         } else {
+            resultText = "You win!"
+            gameOverAlert()
+        }
+        if(unguessedletter == 0){
             resultText = "You win!"
             gameOverAlert()
         }
