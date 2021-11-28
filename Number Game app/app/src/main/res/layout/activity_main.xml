@@ -7,10 +7,26 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/scoreTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#564575"
+        android:paddingTop="3dp"
+        android:text="Highest Score: "
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/phraseTV"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/phraseTV"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:background="#0B0000"
         android:paddingTop="3dp"
         android:text="Phrase"

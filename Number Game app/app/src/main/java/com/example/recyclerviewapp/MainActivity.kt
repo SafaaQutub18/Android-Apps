@@ -1,6 +1,8 @@
 package com.example.recyclerviewapp
 
+import android.content.Context
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -10,6 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var sharedPreferences: SharedPreferences
+
+    lateinit var scoreText: TextView
     lateinit var phraseText: TextView
     lateinit var recyclerV: RecyclerView
     lateinit var newGusseNumET: EditText
@@ -26,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     var lossCount = 0
     var guessedLetter = ""
     var resultText = ""
+    var currentScore = 0
+    var highest_Score = 0
 
 
 
@@ -34,23 +41,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         for(i in 0 until myPhrase.length){
-            println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"+ myPhrase[i])
             if(myPhrase[i] != ' ')
                 starsString += "*"
             else
                 starsString += " "
-            println("noooooooooooooooooooooooooooooooooonoooooooono"+ starsString)
         }
 
         recyclerV = findViewById(R.id.rvGameText)
         newGusseNumET = findViewById(R.id.editTextNewNumber)
         sendBt = findViewById(R.id.sendBt)
         phraseText = findViewById(R.id.phraseTV)
-
-
+        scoreText = findViewById(R.id.scoreTV)
         recyclerV.adapter = phraseAdapterRV
 
+        // git the highest Score from Shared Preferences
+        highest_Score =  getHighestScore()
+        scoreText.text = "Highest Score: $highest_Score"
+
         phraseText.text = "Phrase: $starsString\nGuessed letters:"
+
 
         sendBt.setOnClickListener {
             val userGuess = newGusseNumET.text.toString()
@@ -60,10 +69,15 @@ class MainActivity : AppCompatActivity() {
                 resultText = "You loss T.T"
                 gameOverAlert()
             }
+            //save score
+
+            saveScore(currentScore)
+            scoreText.text = "Highest Score: $highest_Score"
 
             phraseText.text = "Phrase: $starsString\nGuessed letters: $guessedLetter "
             phraseAdapterRV.setPhraseList(guessesTextList)
             newGusseNumET.setText("") // نفضي الedit text
+
 
         }
     }
@@ -72,10 +86,12 @@ class MainActivity : AppCompatActivity() {
         if (userGusse.length > 1) {
             when (userGusse) {
                 myPhrase -> {
+                    currentScore += 10
                     resultText = "You win!"
                     gameOverAlert()
                 }
                 else -> {
+                    if(currentScore>0) currentScore--
                     lossCount++
                     guessesTextList.add(GuessesText("wrong guess: $userGusse ","#FA2500"))
                 }
@@ -84,6 +100,7 @@ class MainActivity : AppCompatActivity() {
             if(myPhrase.contains(userGusse))
                 checkLetter(userGusse)
             else {
+                if(currentScore>0) currentScore--
                 lossCount++
                 guessesTextList.add(GuessesText("wrong guess: $userGusse","#FA2500"))
             }
@@ -95,10 +112,11 @@ class MainActivity : AppCompatActivity() {
         var foundCount = 0
         // check if the guess completed
         if (starsString.contains('*')) {
-            //check if the letter entered previously
+            //check if the letter not entered previously
             if(!guessedLetter.contains(letter)) {
                 guessedLetter += (letter + ",")
                 unguessedletter--
+                currentScore++
             }
             var index = myPhrase.indexOf(letter)
             while (index >= 0) {
@@ -120,15 +138,31 @@ class MainActivity : AppCompatActivity() {
             gameOverAlert()
         }
     }
-
+    fun getHighestScore(): Int{
+        val highestScore : Int
+        sharedPreferences = this.getSharedPreferences(
+            getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+        highestScore = Integer.parseInt(sharedPreferences.getString("score", "0").toString())  // --> retrieves data from Shared Preferences
+        return highestScore
+    }
+    fun saveScore(score: Int){
+        if(score > getHighestScore()){
+        // We can save data with the following code
+        with(sharedPreferences.edit()) {
+            putString("score", score.toString())
+            apply()
+        }
+            this.highest_Score = score
+    }
+    }
     fun gameOverAlert() {
         // first we create a variable to hold an AlertDialog builder
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("$resultText \n Play again?")
+        dialogBuilder.setMessage("$resultText\nYour scores:$currentScore")
             // positive button text and action
-            .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id -> this.recreate() })
+            .setPositiveButton("Play again", DialogInterface.OnClickListener { dialog, id -> this.recreate() })
             // negative button text and action
-            .setNegativeButton("No", DialogInterface.OnClickListener { dialog, id -> dialog.cancel()})
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id -> dialog.cancel()})
         // create dialog box
         val alert = dialogBuilder.create()
         // set title for alert dialog box
