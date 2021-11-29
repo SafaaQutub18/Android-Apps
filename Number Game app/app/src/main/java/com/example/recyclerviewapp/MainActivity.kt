@@ -75,17 +75,7 @@ class MainActivity : AppCompatActivity() {
         // here we set the message of our alert dialog
         dialogBuilder.setMessage("Game over")
             // positive button text and action
-            .setPositiveButton("play again", DialogInterface.OnClickListener { dialog, id ->
-
-                this.gameTextList.clear()
-
-                //game var:
-                this.chancesNum = 3
-                this.random = kotlin.random.Random.nextInt(0, 11)
-                gameAdapterRV.setGameList(gameTextList)
-                newGusseNumET.setText("") // نفضي الedit text
-
-            })
+            .setPositiveButton("play again", DialogInterface.OnClickListener { dialog, id -> this.recreate() })
             // negative button text and action
             .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, id ->
                 dialog.cancel()
